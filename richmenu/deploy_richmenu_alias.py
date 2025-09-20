@@ -50,10 +50,19 @@ def build_areas():
     ]
 
 def create_menu(token, name, chatbar, areas):
-    HJ = {'Authorization': f'Bearer {token}', 'Content-Type': 'application/json'}
-    body = {"size": {"width": W, "height": H}, "selected": False,
-            "name": name, "chatBarText": chatbar, "areas": areas}
-    r = requests.post(f"{API}/richmenu", headers=HJ, data=json.dumps(body).encode("utf-8"))
+    HJ = {'Authorization': f'Bearer {token}', 
+          'Content-Type': 'application/json'
+         }
+    body = {"size": {"width": W, "height": H},
+            "selected": True,
+            "name": name, 
+            "chatBarText": chatbar, 
+            "areas": areas
+           }
+    r = requests.post(f"{API}/richmenu", 
+                      headers=HJ,
+                      data=json.dumps(body).encode("utf-8")
+                     )
     must_ok(r, f"create {name}")
     rid = r.json()["richMenuId"]
     print(f"[OK] created {name}: {rid}")
@@ -62,7 +71,9 @@ def create_menu(token, name, chatbar, areas):
 def upload_image(token, richmenu_id, image_path):
     HB = {'Authorization': f'Bearer {token}', 'Content-Type': 'image/jpeg'}
     with open(image_path, "rb") as f:
-        r = requests.post(f"{API_DATA}/richmenu/{richmenu_id}/content", headers=HB, data=f.read())
+        r = requests.post(f"{API_DATA}/richmenu/{richmenu_id}/content", 
+                          headers=HB, data=f.read()
+                         )
     must_ok(r, f"upload image -> {richmenu_id}")
     print(f"[OK] image uploaded -> {richmenu_id}")
 
@@ -86,8 +97,9 @@ def create_or_update_alias(token, alias_id, richmenu_id):
         r_new = requests.post(
             f"{API}/richmenu/alias",
             headers=HJ,
-            data=json.dumps({"richMenuAliasId": alias_id, "richMenuId": richmenu_id}).encode("utf-8")
-        )
+            data=json.dumps({"richMenuAliasId": alias_id, 
+                             "richMenuId": richmenu_id}).encode("utf-8")
+                            )
         must_ok(r_new, f"create alias {alias_id}")
         print(f"[OK] alias created: {alias_id} -> {richmenu_id}")
     elif r_upd.ok:
@@ -100,8 +112,9 @@ def create_or_update_alias(token, alias_id, richmenu_id):
             r_new = requests.post(
                 f"{API}/richmenu/alias",
                 headers=HJ,
-                data=json.dumps({"richMenuAliasId": alias_id, "richMenuId": richmenu_id}).encode("utf-8")
-            )
+                data=json.dumps({"richMenuAliasId": alias_id, 
+                                 "richMenuId": richmenu_id}).encode("utf-8")
+                                )   
             must_ok(r_new, f"create alias {alias_id} (after 400)")
             print(f"[OK] alias created(after 400): {alias_id} -> {richmenu_id}")
         else:
