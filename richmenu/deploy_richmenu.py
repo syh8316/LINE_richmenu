@@ -74,7 +74,7 @@ def delete_menu(token, richmenu_id):
 
 def main():
     parser = argparse.ArgumentParser()
-    parser.add_argument("--image", default="syh/line/richmenu_comp.jpg")
+    parser.add_argument("--image", default="richmenu/line/richmenu_comp.jpg")
     parser.add_argument("--name", default="劇團資訊")
     parser.add_argument("--chatbar", default="劇團資訊")
     parser.add_argument("--home", default="https://syh8316.github.io/syh8316/syh/home.html")
