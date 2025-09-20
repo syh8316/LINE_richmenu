@@ -132,11 +132,6 @@ def delete_alias(token, alias_id):
     must_ok(r, f"delete alias {alias_id}")
     print("[OK] alias deleted:", alias_id)
 
-# main() 裡、建立 A/B 之前加：
-for a in list_aliases(token):
-    if a.get("richMenuAliasId") in {"menu-a", "menu-b"}:
-        delete_alias(token, a["richMenuAliasId"])
-
 def main():
     token = os.environ.get("LINE_TOKEN")
     if not token:
@@ -144,20 +139,33 @@ def main():
 
     args = parse_args()
 
-    # ✨ 這裡改成自動裁切
+    # （可選）先清掉舊 alias，避免衝突
+    try:
+        for a in list_aliases(token):
+            alias = a.get("richMenuAliasId")
+            if alias in {"menu-a", "menu-b"}:
+                delete_alias(token, alias)
+    except Exception as e:
+        print("[WARN] skip alias cleanup:", e)
+
+    # 圖片等比縮放（不裁切）
     imgA = fit_contain(args.imageA)
     imgB = fit_contain(args.imageB)
 
     areas = build_areas()
 
+    # 建 A、B 兩張並上傳圖
     rid_a = create_menu(token, "選單A", args.chatbar, areas); upload_image(token, rid_a, imgA)
     rid_b = create_menu(token, "選單B", args.chatbar, areas); upload_image(token, rid_b, imgB)
 
+    # 設定/更新 alias
     create_or_update_alias(token, "menu-a", rid_a)
     create_or_update_alias(token, "menu-b", rid_b)
 
+    # 設成全體預設
     set_default_all(token, rid_a if args.__dict__["set_default"] == "menu-a" else rid_b)
 
+    # （可選）刪掉其他非 A/B 的舊選單
     if args.delete_others:
         keep = {rid_a, rid_b}
         for m in list_menus(token):
