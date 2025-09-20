@@ -1,6 +1,7 @@
 # syh/deploy_richmenu_alias.py
 import os, sys, json, argparse, requests
 from PIL import Image
+from pathlib import Path
 
 API = "https://api.line.me/v2/bot"
 API_DATA = "https://api-data.line.me/v2/bot"
@@ -30,7 +31,14 @@ def fit_contain(path, tw=W, th=H, bg=(0,0,0)):
     canvas.save(out, quality=90)
     print(f"[OK] fitted (contain) to {tw}x{th} -> {out}")
     return out
-    
+
+def ensure_path(p):
+    q = Path(p)
+    print(f"[DEBUG] image path = {q} (abs={q.resolve()}) exists={q.exists()}")
+    if not q.exists():
+        raise FileNotFoundError(f"找不到圖片: {q}")
+    return str(q)
+
 def build_areas():
     return [
         {"bounds": {"x": X_OFF[0], "y": 0, "width": COL_W[0], "height": TAB_H},
@@ -149,8 +157,8 @@ def main():
         print("[WARN] skip alias cleanup:", e)
 
     # 圖片等比縮放（不裁切）
-    imgA = fit_contain(args.imageA)
-    imgB = fit_contain(args.imageB)
+    imgA = fit_contain(ensure_path(args.imageA))
+    imgB = fit_contain(ensure_path(args.imageB))
 
     areas = build_areas()
 
