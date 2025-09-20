@@ -1,0 +1,40 @@
+name: Deploy to GitHub Pages
+
+on:
+  push:
+    branches: [ main ]          # 主要分支不是 main 就改掉
+  workflow_dispatch:            # 也能手動跑
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+concurrency:                     # 防止多次佈署互卡
+  group: "pages"
+  cancel-in-progress: true
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      # 如果網站在 docs/ 資料夾，改成 path: docs
+      - name: Upload Pages artifact
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: ./
+
+  deploy:
+    needs: build
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v4
+        # 可選：若常卡隊，可拉長等待（單位毫秒）
+        # with:
+        #   timeout: 1200000   # 20 分鐘
