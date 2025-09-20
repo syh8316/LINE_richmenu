@@ -1,16 +1,35 @@
-def list_aliases(token):
-    H = {'Authorization': f'Bearer {token}'}
-    r = requests.get(f"{API}/richmenu/alias/list", headers=H)
-    must_ok(r, "list aliases")
-    return r.json().get("aliases", [])
+name: Deploy LINE Rich Menu (Alias Switch A/B)
 
-def delete_alias(token, alias_id):
-    H = {'Authorization': f'Bearer {token}'}
-    r = requests.delete(f"{API}/richmenu/alias/{alias_id}", headers=H)
-    must_ok(r, f"delete alias {alias_id}")
-    print("[OK] alias deleted:", alias_id)
+on:
+  workflow_dispatch: {}          # 手動觸發
+  push:                          # 可選：自動觸發
+    branches: [main]
+    paths:
+      - 'richmenu/line/menuA.*'
+      - 'richmenu/line/menuB.*'
+      - 'richmenu/deploy_richmenu_alias.py'
+      - 'requirements.txt'
+      - '.github/workflows/deploy-richmenu-alias.yml'
 
-# main() 裡、建立 A/B 之前加：
-for a in list_aliases(token):
-    if a.get("richMenuAliasId") in {"menu-a", "menu-b"}:
-        delete_alias(token, a["richMenuAliasId"])
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    concurrency:
+      group: richmenu-alias
+      cancel-in-progress: true
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - run: pip install -r requirements.txt
+      - name: Deploy two-page rich menu (A/B)
+        env:
+          LINE_TOKEN: ${{ secrets.LINE_TOKEN }}
+        run: |
+          ls -al richmenu/line || true
+          python richmenu/deploy_richmenu_alias.py \
+            --imageA richmenu/line/menuA.png \
+            --imageB richmenu/line/menuB.png \
+            --set-default menu-a \
+            --delete-others
