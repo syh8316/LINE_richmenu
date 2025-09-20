@@ -120,6 +120,23 @@ def delete_menu(token, rid):
     must_ok(r, f"delete {rid}")
     print("[OK] deleted:", rid)
 
+def list_aliases(token):
+    H = {'Authorization': f'Bearer {token}'}
+    r = requests.get(f"{API}/richmenu/alias/list", headers=H)
+    must_ok(r, "list aliases")
+    return r.json().get("aliases", [])
+
+def delete_alias(token, alias_id):
+    H = {'Authorization': f'Bearer {token}'}
+    r = requests.delete(f"{API}/richmenu/alias/{alias_id}", headers=H)
+    must_ok(r, f"delete alias {alias_id}")
+    print("[OK] alias deleted:", alias_id)
+
+# main() 裡、建立 A/B 之前加：
+for a in list_aliases(token):
+    if a.get("richMenuAliasId") in {"menu-a", "menu-b"}:
+        delete_alias(token, a["richMenuAliasId"])
+
 def main():
     token = os.environ.get("LINE_TOKEN")
     if not token:
