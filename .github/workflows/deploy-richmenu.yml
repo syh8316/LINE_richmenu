@@ -1,0 +1,28 @@
+name: Deploy LINE Rich Menu
+
+on:
+  workflow_dispatch: {}   # 手動執行
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Install deps
+        run: |
+          pip install -r requirements.txt
+
+      - name: Deploy rich menu
+        env:
+          LINE_TOKEN: ${{ secrets.LINE_TOKEN }}   # 從 Secrets 讀 Token
+        run: |
+          python syh/deploy_richmenu.py \
+            --image syh/line/richmenu_comp.jpg \
+            --set-default \
+            --delete-others
