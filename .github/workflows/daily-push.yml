@@ -1,0 +1,30 @@
+# .github/workflows/daily-push.yml
+name: LINE Daily Push
+
+on:
+  schedule:
+    - cron: "0 1 * * *"   # 01:00 UTC = 09:00 台北時間
+  workflow_dispatch: {}     # 需要時可手動觸發
+
+jobs:
+  run:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Install deps
+        run: pip install requests
+
+      - name: Send LINE daily message
+        env:
+          LINE_TOKEN: ${{ secrets.LINE_TOKEN }}
+          MODE: broadcast              # broadcast / multicast
+          # 若用 multicast，可放 secrets.USER_IDS="Uxxxxx1,Uxxxxx2"
+          # USER_IDS: ${{ secrets.USER_IDS }}
+          MESSAGE: "今天也一起加油 💪"
+        run: python daily_push.py
