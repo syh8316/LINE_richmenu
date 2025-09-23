@@ -19,10 +19,8 @@ jobs:
         run: pip install requests
 
       - name: Send LINE daily message
-        working-directory: LINE_richmenu/richmenu
         env:
           LINE_TOKEN: ${{ secrets.LINE_TOKEN }}
-          MODE: broadcast         # or multicast
-          # USER_IDS: ${{ secrets.USER_IDS }}   # 若用 multicast
+          MODE: broadcast
           MESSAGE: "今天也一起加油 💪"
-        run: python daily_push.py
+        run: python LINE_richmenu/richmenu/daily_push.py
