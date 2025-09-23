@@ -1,8 +1,11 @@
 <!doctype html>
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
-<title>Show my LINE userId</title>
-<script src="https://static.line-scdn.net/liff/edge/versions/2/sdk.js"></script>
+<title>My userId</title>
+
+<!-- 1) 正確的 LIFF v2 SDK -->
+<script src="https://static.line-scdn.net/liff/edge/2/sdk.js"></script>
+
 <style>
   body{font-family:system-ui,Segoe UI,Arial;padding:24px;line-height:1.6}
   .card{border:1px solid #ddd;border-radius:12px;padding:16px}
@@ -10,6 +13,7 @@
   .row{display:flex;gap:12px;flex-wrap:wrap;margin-top:12px}
   code{background:#f6f7f9;padding:4px 6px;border-radius:6px}
 </style>
+
 <main>
   <h2>My userId</h2>
   <div class="card">
@@ -20,19 +24,26 @@
       <button id="addBtn">加入官方帳號</button>
     </div>
   </div>
-  <p style="opacity:.7">※ 若已是好友，「加入官方帳號」按鈕點了不會重複加入，屬於備用入口。</p>
+  <p style="opacity:.7">※ 若已是好友，「加入官方帳號」點了不會重複加入。</p>
 </main>
+
 <script>
 (async () => {
-  const OA_URL = "https://lin.ee/794BQq3"; // 你的官方帳號加入連結
+  const OA_URL = "https://lin.ee/794BQq3"; // 或 https://lin.ee/你的短網址
   const uidEl = document.getElementById('uid');
   const nameEl = document.getElementById('name');
   const copyBtn = document.getElementById('copyBtn');
   const addBtn  = document.getElementById('addBtn');
 
+  // 2) 若 SDK 沒載到（就像你剛剛），直接提示
+  if (!window.liff) {
+    uidEl.textContent = "LIFF SDK 未載入（請確認上方 <script> 網址）";
+    return;
+  }
+
   try{
-    await liff.init({ liffId: "2008163336-xak046ZL" });
-    if(!liff.isLoggedIn()){ liff.login(); return; }
+    await liff.init({ liffId: "2008163336-xak046ZL" });   // ←換成你 Login channel 產生的 LIFF ID
+    if (!liff.isLoggedIn()) { liff.login(); return; }
 
     const prof = await liff.getProfile();
     nameEl.textContent = prof.displayName || "—";
@@ -44,7 +55,7 @@
       setTimeout(()=> copyBtn.textContent = "複製 userId", 1500);
     };
     addBtn.onclick = () => liff.openWindow({ url: OA_URL, external: true });
-  }catch(e){
+  } catch (e) {
     uidEl.textContent = "Error: " + e;
   }
 })();
