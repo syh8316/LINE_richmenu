@@ -26,10 +26,11 @@ jobs:
       - name: Send LINE daily message
         env:
           LINE_TOKEN: ${{ secrets.LINE_TOKEN }}
-          MODE: broadcast
+          MODE: broadcast                 # 或 multicast
           MESSAGE: "今天也一起加油 💪"
-        run: |
-          set -e
-          SCRIPT=$(find . -type f -name "daily_push.py" | head -n1)
-          echo "Using script: $SCRIPT"
-          python "$SCRIPT"
+          QUOTA_STOP_PERCENT: "0.95"      # 已用量達 95% 就停止
+          QUOTA_MIN_REMAIN: "200"         # 至少預留 200 則（不想保留就設 0）
+          COUNT_FOLLOWERS: "1"            # broadcast 時估算本次成本（可關閉=0）
+          # USER_IDS: ${{ secrets.USER_IDS }}  # multicast 時才需要
+          # DRY_RUN: "1"                  # 只想試跑不發送時打開
+        run: python LINE_richmenu/richmenu/daily_push.py
