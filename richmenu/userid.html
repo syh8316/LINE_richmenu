@@ -1,0 +1,20 @@
+<!doctype html>
+<meta charset="utf-8">
+<title>Show my LINE userId</title>
+<script src="https://static.line-scdn.net/liff/edge/versions/2/sdk.js"></script>
+<body>
+<h2>My userId</h2>
+<pre id="out">loading…</pre>
+<script>
+(async () => {
+  try {
+    await liff.init({ liffId: "YOUR_LIFF_ID" });
+    if (!liff.isLoggedIn()) { liff.login(); return; }
+    const prof = await liff.getProfile();
+    document.getElementById('out').textContent = prof.userId || "(no id)";
+  } catch (e) {
+    document.getElementById('out').textContent = "Error: " + e;
+  }
+})();
+</script>
+</body>
