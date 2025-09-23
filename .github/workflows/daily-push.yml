@@ -1,7 +1,7 @@
 name: LINE Daily Push
 on:
   schedule:
-    - cron: "0 1 * * *"     # 01:00 UTC = 09:00 台北時間
+    - cron: "0 1 * * *"    # 01:00 UTC = 09:00 台北
   workflow_dispatch: {}
 
 jobs:
@@ -10,17 +10,26 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      - name: Set up Python
-        uses: actions/setup-python@v5
+      - uses: actions/setup-python@v5
         with:
           python-version: "3.11"
 
       - name: Install deps
         run: pip install requests
 
+      - name: Debug repo layout (optional)
+        run: |
+          pwd
+          ls -la
+          find . -maxdepth 3 -type f -name "daily_push.py" -print
+
       - name: Send LINE daily message
         env:
           LINE_TOKEN: ${{ secrets.LINE_TOKEN }}
           MODE: broadcast
           MESSAGE: "今天也一起加油 💪"
-        run: python LINE_richmenu/richmenu/daily_push.py
+        run: |
+          set -e
+          SCRIPT=$(find . -type f -name "daily_push.py" | head -n1)
+          echo "Using script: $SCRIPT"
+          python "$SCRIPT"
