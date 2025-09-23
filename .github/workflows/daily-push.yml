@@ -30,7 +30,7 @@ jobs:
           MESSAGE: "今天也一起加油 💪"
           QUOTA_STOP_PERCENT: "0.95"      # 已用量達 95% 就停止
           QUOTA_MIN_REMAIN: "200"         # 至少預留 200 則（不想保留就設 0）
-          COUNT_FOLLOWERS: "1"            # broadcast 時估算本次成本（可關閉=0）
+          COUNT_FOLLOWERS: "0"            # broadcast 時估算本次成本（可關閉=0）
           # USER_IDS: ${{ secrets.USER_IDS }}  # multicast 時才需要
           # DRY_RUN: "1"                  # 只想試跑不發送時打開
         run: |
