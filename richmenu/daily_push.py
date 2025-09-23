@@ -102,4 +102,50 @@ def should_skip_by_quota(token, expected_cost=0):
 def main():
     token = os.getenv("LINE_TOKEN")
     if not token:
-        print("請以環境變數 LINE
+        print("請以環境變數 LINE_TOKEN 提供 Channel access token")
+        sys.exit(1)
+
+    mode = os.getenv("MODE", "broadcast").lower()
+    text = make_default_text()
+    dry  = os.getenv("DRY_RUN", "0") == "1"
+
+    # 預估本次發送成本（可選）：COUNT_FOLLOWERS=1 時估算 broadcast 覆蓋數
+    expected_cost = 0
+    count_followers = os.getenv("COUNT_FOLLOWERS", "0") == "1"
+    user_ids = []
+
+    if mode == "broadcast" and count_followers:
+        user_ids = list_followers(token)
+        expected_cost = len(user_ids)
+        print(f"[Estimate] broadcast 預估對象數量：{expected_cost}")
+    elif mode in ("multicast", "push"):
+        raw = os.getenv("USER_IDS", "")
+        if raw.strip():
+            user_ids = [s.strip() for s in raw.split(",") if s.strip()]
+        else:
+            print("[Info] 未提供 USER_IDS，改用 followers API 取得所有好友 id …")
+            user_ids = list_followers(token)
+        expected_cost = len(user_ids)
+        print(f"[Estimate] multicast 目標數量：{expected_cost}")
+
+    # 配額保護：接近上限就不發
+    if should_skip_by_quota(token, expected_cost=expected_cost):
+        return
+
+    if dry:
+        print("[DRY RUN] 僅示意，不實際發送：")
+        print(text)
+        return
+
+    # 發送
+    if mode == "broadcast":
+        send_broadcast(token, text)
+    elif mode in ("multicast", "push"):
+        for i in range(0, len(user_ids), 500):  # 一次最多 500 人
+            send_multicast(token, user_ids[i:i+500], text)
+    else:
+        print(f"未知 MODE='{mode}'（允許 broadcast / multicast / push）")
+        sys.exit(1)
+
+if __name__ == "__main__":
+    main()
