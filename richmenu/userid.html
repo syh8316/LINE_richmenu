@@ -1,20 +1,23 @@
 <!doctype html>
-<meta charset="utf-8">
+<meta charset="utf-8" />
 <title>Show my LINE userId</title>
+<meta name="viewport" content="width=device-width, initial-scale=1" />
 <script src="https://static.line-scdn.net/liff/edge/versions/2/sdk.js"></script>
-<body>
-<h2>My userId</h2>
-<pre id="out">loading…</pre>
+<main style="font-family:system-ui,Segoe UI,Arial;padding:24px">
+  <h2>My userId</h2>
+  <p>請在 LINE 內建瀏覽器開啟這個頁面。</p>
+  <pre id="out" style="padding:12px;border:1px solid #ddd;border-radius:8px;overflow:auto">loading…</pre>
+</main>
 <script>
 (async () => {
+  const out = document.getElementById('out');
   try {
     await liff.init({ liffId: "2008163336-xak046ZL" });
     if (!liff.isLoggedIn()) { liff.login(); return; }
     const prof = await liff.getProfile();
-    document.getElementById('out').textContent = prof.userId || "(no id)";
+    out.textContent = JSON.stringify({ userId: prof.userId, displayName: prof.displayName }, null, 2);
   } catch (e) {
-    document.getElementById('out').textContent = "Error: " + e;
+    out.textContent = "Error: " + e;
   }
 })();
 </script>
-</body>
