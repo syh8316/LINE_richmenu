@@ -1,23 +1,51 @@
 <!doctype html>
 <meta charset="utf-8" />
-<title>Show my LINE userId</title>
 <meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Show my LINE userId</title>
 <script src="https://static.line-scdn.net/liff/edge/versions/2/sdk.js"></script>
-<main style="font-family:system-ui,Segoe UI,Arial;padding:24px">
+<style>
+  body{font-family:system-ui,Segoe UI,Arial;padding:24px;line-height:1.6}
+  .card{border:1px solid #ddd;border-radius:12px;padding:16px}
+  button{padding:10px 14px;border:1px solid #333;border-radius:10px;background:#111;color:#fff;cursor:pointer}
+  .row{display:flex;gap:12px;flex-wrap:wrap;margin-top:12px}
+  code{background:#f6f7f9;padding:4px 6px;border-radius:6px}
+</style>
+<main>
   <h2>My userId</h2>
-  <p>請在 LINE 內建瀏覽器開啟這個頁面。</p>
-  <pre id="out" style="padding:12px;border:1px solid #ddd;border-radius:8px;overflow:auto">loading…</pre>
+  <div class="card">
+    <div>顯示名稱：<b id="name">—</b></div>
+    <div>userId：<code id="uid">—</code></div>
+    <div class="row">
+      <button id="copyBtn">複製 userId</button>
+      <button id="addBtn">加入官方帳號</button>
+    </div>
+  </div>
+  <p style="opacity:.7">※ 若已是好友，「加入官方帳號」按鈕點了不會重複加入，屬於備用入口。</p>
 </main>
 <script>
 (async () => {
-  const out = document.getElementById('out');
-  try {
+  const OA_URL = "https://lin.ee/794BQq3"; // 你的官方帳號加入連結
+  const uidEl = document.getElementById('uid');
+  const nameEl = document.getElementById('name');
+  const copyBtn = document.getElementById('copyBtn');
+  const addBtn  = document.getElementById('addBtn');
+
+  try{
     await liff.init({ liffId: "2008163336-xak046ZL" });
-    if (!liff.isLoggedIn()) { liff.login(); return; }
+    if(!liff.isLoggedIn()){ liff.login(); return; }
+
     const prof = await liff.getProfile();
-    out.textContent = JSON.stringify({ userId: prof.userId, displayName: prof.displayName }, null, 2);
-  } catch (e) {
-    out.textContent = "Error: " + e;
+    nameEl.textContent = prof.displayName || "—";
+    uidEl.textContent  = prof.userId || "—";
+
+    copyBtn.onclick = async () => {
+      await navigator.clipboard.writeText(prof.userId || "");
+      copyBtn.textContent = "已複製 ✓";
+      setTimeout(()=> copyBtn.textContent = "複製 userId", 1500);
+    };
+    addBtn.onclick = () => liff.openWindow({ url: OA_URL, external: true });
+  }catch(e){
+    uidEl.textContent = "Error: " + e;
   }
 })();
 </script>
