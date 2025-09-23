@@ -8,7 +8,7 @@
 <script>
 (async () => {
   try {
-    await liff.init({ liffId: "YOUR_LIFF_ID" });
+    await liff.init({ liffId: "2008163336-xak046ZL" });
     if (!liff.isLoggedIn()) { liff.login(); return; }
     const prof = await liff.getProfile();
     document.getElementById('out').textContent = prof.userId || "(no id)";
