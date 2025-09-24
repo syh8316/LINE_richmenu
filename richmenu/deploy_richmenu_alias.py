@@ -61,25 +61,35 @@ def areas_menu_a():
     ]
 
 def areas_menu_b():
-    """B頁：連結資訊（官網／FB／IG／Threads）"""
+    """B頁：連結資訊（上排整條官網；下排 FB/IG/Threads）"""
     return [
         # 分頁列（左=切到A、右=當前B）
-        {"bounds":{"x":0,    "y":0, "width":1250, "height":TAB_H},
-         "action":{"type":"richmenuswitch","richMenuAliasId":"menu-a","data":"tab=a"}},
-        {"bounds":{"x":1250, "y":0, "width":1250, "height":TAB_H},
-         "action":{"type":"richmenuswitch","richMenuAliasId":"menu-b","data":"tab=b"}},
+        {"bounds": {"x": 0,    "y": 0, "width": 1250, "height": TAB_H},
+         "action": {"type": "richmenuswitch", "richMenuAliasId": "menu-a", "data": "tab=a"}},
+        {"bounds": {"x": 1250, "y": 0, "width": 1250, "height": TAB_H},
+         "action": {"type": "richmenuswitch", "richMenuAliasId": "menu-b", "data": "tab=b"}},
 
-        # 內容 2×2
-        {"bounds":{"x":0,    "y":TAB_H,        "width":1250, "height":718},
-         "action":{"type":"uri","label":"官網","uri":"https://syh8316.github.io/syh8316/syh/home.html"}},
-        {"bounds":{"x":1250, "y":TAB_H,        "width":1250, "height":718},
-         "action":{"type":"uri","label":"Facebook","uri":"https://www.facebook.com/share/1AQhTBMEyT/?mibextid=wwXIfr"}},
+        # 1~3：整條（官網）
+        {"bounds": {"x": 0, "y": TAB_H, "width": 2500, "height": 718},
+         "action": {"type": "uri", "label": "官網",
+                    "uri": "https://syh8316.github.io/syh8316/syh/home.html"}},
 
-        {"bounds":{"x":0,    "y":TAB_H+718,    "width":1250, "height":718},
-         "action":{"type":"uri","label":"Instagram","uri":"https://www.instagram.com/syh.ot_1994?utm_source=qr"}},
-        {"bounds":{"x":1250, "y":TAB_H+718,    "width":1250, "height":718},
-         "action":{"type":"uri","label":"Threads","uri":"https://www.threads.net/@syh.ot_1994"}}
+        # 4：左下（FB）
+        {"bounds": {"x": 0, "y": TAB_H + 718, "width": 833, "height": 718},
+         "action": {"type": "uri", "label": "Facebook",
+                    "uri": "https://www.facebook.com/p/%E6%96%B0%E7%BE%A9%E5%92%8C%E6%AD%8C%E5%8A%87%E5%9C%98-100065152267273/?locale=zh_TW"}},
+
+        # 5：中下（IG）
+        {"bounds": {"x": 833, "y": TAB_H + 718, "width": 834, "height": 718},
+         "action": {"type": "uri", "label": "Instagram",
+                    "uri": "https://www.instagram.com/syh.ot_1994/"}},
+
+        # 6：右下（Threads）
+        {"bounds": {"x": 1667, "y": TAB_H + 718, "width": 833, "height": 718},
+         "action": {"type": "uri", "label": "Threads",
+                    "uri": "https://www.threads.net/@syh.ot_1994"}}
     ]
+    
 def create_menu(token, name, chatbar, areas):
     HJ = {'Authorization': f'Bearer {token}', 
           'Content-Type': 'application/json'
