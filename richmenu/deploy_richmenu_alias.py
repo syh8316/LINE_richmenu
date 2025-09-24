@@ -170,8 +170,8 @@ def main():
         print("[WARN] skip alias cleanup:", e)
 
     # 圖片等比縮放（不裁切）
-    imgA = fit_contain(ensure_path(args.imageA))
-    imgB = fit_contain(ensure_path(args.imageB))
+    imgA = fit_contain(ensure_path(args.imageA, bg=(238,236,226)))
+    imgB = fit_contain(ensure_path(args.imageB, bg=(238,236,226)))
 
     areas = build_areas()
 
