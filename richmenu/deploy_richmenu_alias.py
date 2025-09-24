@@ -39,16 +39,47 @@ def ensure_path(p):
         raise FileNotFoundError(f"找不到圖片: {q}")
     return str(q)
 
-def build_areas():
+def areas_menu_a():
+    """A頁：基本資訊（聯絡／最新活動／樂師／演員）"""
     return [
-        {"bounds": {"x": X_OFF[0], "y": 0, "width": COL_W[0], "height": TAB_H},
-         "action": {"type": "richmenuswitch", "richMenuAliasId": "menu-a", "data": "goto=menuA"}},
-        {"bounds": {"x": X_OFF[1], "y": 0, "width": COL_W[1], "height": TAB_H},
-         "action": {"type": "richmenuswitch", "richMenuAliasId": "menu-b", "data": "goto=menuB"}},
-        {"bounds": {"x": X_OFF[2], "y": 0, "width": COL_W[2], "height": TAB_H},
-         "action": {"type": "message", "text": "選單 C（尚未製作）"}},
+        # 分頁列（左=當前A、右=切到B）
+        {"bounds":{"x":0,    "y":0, "width":1250, "height":TAB_H},
+         "action":{"type":"richmenuswitch","richMenuAliasId":"menu-a","data":"tab=a"}},
+        {"bounds":{"x":1250, "y":0, "width":1250, "height":TAB_H},
+         "action":{"type":"richmenuswitch","richMenuAliasId":"menu-b","data":"tab=b"}},
+
+        # 內容 2×2
+        {"bounds":{"x":0,    "y":TAB_H,        "width":1250, "height":718},
+         "action":{"type":"postback","data":"sec=contact"}},                 # 聯絡資訊
+        {"bounds":{"x":1250, "y":TAB_H,        "width":1250, "height":718},
+         "action":{"type":"postback","data":"sec=events&page=1"}},           # 最新活動
+
+        {"bounds":{"x":0,    "y":TAB_H+718,    "width":1250, "height":718},
+         "action":{"type":"postback","data":"sec=musicians&page=1"}},        # 樂師資訊
+        {"bounds":{"x":1250, "y":TAB_H+718,    "width":1250, "height":718},
+         "action":{"type":"postback","data":"sec=actors&page=1"}}            # 演員資訊
     ]
 
+def areas_menu_b():
+    """B頁：連結資訊（官網／FB／IG／Threads）"""
+    return [
+        # 分頁列（左=切到A、右=當前B）
+        {"bounds":{"x":0,    "y":0, "width":1250, "height":TAB_H},
+         "action":{"type":"richmenuswitch","richMenuAliasId":"menu-a","data":"tab=a"}},
+        {"bounds":{"x":1250, "y":0, "width":1250, "height":TAB_H},
+         "action":{"type":"richmenuswitch","richMenuAliasId":"menu-b","data":"tab=b"}},
+
+        # 內容 2×2
+        {"bounds":{"x":0,    "y":TAB_H,        "width":1250, "height":718},
+         "action":{"type":"uri","label":"官網","uri":"https://syh8316.github.io/syh8316/syh/home.html"}},
+        {"bounds":{"x":1250, "y":TAB_H,        "width":1250, "height":718},
+         "action":{"type":"uri","label":"Facebook","uri":"https://www.facebook.com/share/1AQhTBMEyT/?mibextid=wwXIfr"}},
+
+        {"bounds":{"x":0,    "y":TAB_H+718,    "width":1250, "height":718},
+         "action":{"type":"uri","label":"Instagram","uri":"https://www.instagram.com/syh.ot_1994?utm_source=qr"}},
+        {"bounds":{"x":1250, "y":TAB_H+718,    "width":1250, "height":718},
+         "action":{"type":"uri","label":"Threads","uri":"https://www.threads.net/@syh.ot_1994"}}
+    ]
 def create_menu(token, name, chatbar, areas):
     HJ = {'Authorization': f'Bearer {token}', 
           'Content-Type': 'application/json'
@@ -173,11 +204,14 @@ def main():
     imgA = fit_contain(ensure_path(args.imageA), bg=(238,236,226))
     imgB = fit_contain(ensure_path(args.imageB), bg=(238,236,226))
 
-    areas = build_areas()
-
-    # 建 A、B 兩張並上傳圖
-    rid_a = create_menu(token, "選單A", args.chatbar, areas); upload_image(token, rid_a, imgA)
-    rid_b = create_menu(token, "選單B", args.chatbar, areas); upload_image(token, rid_b, imgB)
+    areasA = areas_menu_a()
+    areasB = areas_menu_b()
+    
+    rid_a = create_menu(token, "基本資訊", args.chatbar, areasA); upload_image(token, rid_a, imgA)
+    rid_b = create_menu(token, "連結資訊", args.chatbar, areasB); upload_image(token, rid_b, imgB)
+    
+    create_or_update_alias(token, "menu-a", rid_a)
+    create_or_update_alias(token, "menu-b", rid_b)
 
     # 設定/更新 alias
     create_or_update_alias(token, "menu-a", rid_a)
