@@ -28,10 +28,9 @@ jobs:
           LINE_TOKEN: ${{ secrets.LINE_TOKEN }}
         run: |
           echo "cwd=$(pwd)"
-          ls -al
           ls -al "$GITHUB_WORKSPACE/richmenu/line" || true
           python richmenu/deploy_richmenu_alias.py \
-            --imageA "$GITHUB_WORKSPACE/richmenu/line/menuA.png" \
-            --imageB "$GITHUB_WORKSPACE/richmenu/line/menuB.png" \
+            --imageA "$GITHUB_WORKSPACE/richmenu/line/menu_1.PNG" \
+            --imageB "$GITHUB_WORKSPACE/richmenu/line/menu_2.PNG" \
             --set-default menu-a \
             --delete-others
