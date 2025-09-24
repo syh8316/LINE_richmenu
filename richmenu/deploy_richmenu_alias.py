@@ -153,8 +153,8 @@ def create_or_update_alias(token, alias_id, richmenu_id):
 
 def parse_args():
     ap = argparse.ArgumentParser()
-    ap.add_argument("--imageA", default="richmenu/line/menuA.png")
-    ap.add_argument("--imageB", default="richmenu/line/menuB.png")
+    ap.add_argument("--imageA", default="richmenu/line/menu_1.PNG")
+    ap.add_argument("--imageB", default="richmenu/line/menu_2.PNG")
     ap.add_argument("--chatbar", default="劇團資訊")
     ap.add_argument("--set-default", choices=["menu-a", "menu-b"], default="menu-a")
     ap.add_argument("--delete-others", action="store_true")
